@@ -19,16 +19,20 @@ var ContactForm = React.createClass({
     },
 
     render: function(){
+        var errors = this.props.value.errors || {};
+
         return(
             React.createElement('form', {onSubmit: this.onSubmit, className: 'ContactForm', noValidate: true},
                 React.createElement('input',{
                     type: 'text',
+                    className: errors.name && 'ContactForm-error',
                     placeholder: 'Name (required)',
                     value: this.props.value.name,
                     onChange: this.onNameChange,
                 }),
                 React.createElement('input',{
                     type: 'email',
+                    className: errors.email && 'ContactForm-error',
                     placeholder: 'Email(required)',
                     value: this.props.value.email,
                     onChange: this.onEmailChange,
@@ -95,16 +99,21 @@ function updateNewContact(contact){
 function submitNewContact(){
     var contact = Object.assign({}, state.newContact, {key: state.contacts.length + 1, errors: {}});
 
-    if (contact.name && contact.email){
-        setState(
-            Object.keys(contact.errors).length === 0
-            ? {
-                newContact: Object.assign({}, CONTACT_TEMPLATE),
-                contacts: state.contacts.slice(0).concat(contact),
-            }
-            : {newContact: contact}
-        );
+    if(!contact.name){
+        contact.errors.name = ["Please enter your new contact's name"]
     }
+    if (!/.+@.+\..+/.test(contact.email)){
+        contact.errors.email = ["Please enter your contact's email"]
+    }    
+    setState(
+        Object.keys(contact.errors).length === 0
+        ? {
+            newContact: Object.assign({}, CONTACT_TEMPLATE),
+            contacts: state.contacts.slice(0).concat(contact),
+        }
+        : {newContact: contact}
+    );
+    
 }
 
 var state = {};
