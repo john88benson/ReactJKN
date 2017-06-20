@@ -15,7 +15,22 @@ var ContactForm = React.createClass({
     },
     onSubmit: function(e){
         e.preventDefault();
+        this.refs.name.focus();
         this.props.onSubmit();
+    },
+
+    componentDidUpdate: function(prevProps){
+        var value = this.props.value;
+        var prevValue = prevProps.value;
+
+        if (this.isMounted && value.errors && value.errors != prevValue.errors){
+            if (value.errors.email){
+                this.refs.email.focus();
+            }
+            else if (value.errors.name){
+                this.refs.name.focus();
+            }
+        }
     },
 
     render: function(){
@@ -29,6 +44,8 @@ var ContactForm = React.createClass({
                     placeholder: 'Name (required)',
                     value: this.props.value.name,
                     onChange: this.onNameChange,
+                    ref: 'name',
+                    autoFocus: true,
                 }),
                 React.createElement('input',{
                     type: 'email',
@@ -36,6 +53,7 @@ var ContactForm = React.createClass({
                     placeholder: 'Email(required)',
                     value: this.props.value.email,
                     onChange: this.onEmailChange,
+                    ref: 'email',
                 }),
                 React.createElement('textarea',{
                     placeholder: 'Description',
