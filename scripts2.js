@@ -134,21 +134,11 @@ function submitNewContact(){
     
 }
 
-var state = {};
-
-function setState(changes){
-    Object.assign(state, changes);
-
-    ReactDOM.render(
-        React.createElement(ContactView, Object.assign({}, state, {
-            onNewContactChange: updateNewContact,
-            onNewContactSubmit: submitNewContact,
-        })),
-        document.getElementById('react-app')
-    );
+function navigated(){
+    setState({location: window.location.hash});
 }
 
-setState ({
+var state = {
     contacts: [
         {key: 1, name: "John C Benson", email: "jbenson@withum.com", description: "Just Another Developer"},
         {key: 2, name: "Roland Deschain", email: "rdeschain@katet.org", description: "Gunslinger"},
@@ -156,5 +146,33 @@ setState ({
         {key: 4, name: "Isaac Asimov", email: "iasimov@trantor.gov", description: "One of the Big Three"}
     ],
     newContact: Object.assign({}, CONTACT_TEMPLATE),
-});
+    location: window.location.hash
+};
+
+function setState(changes){
+    var component;
+
+    Object.assign(state, changes);
+
+    switch (state.location){
+        case '#/contacts':
+        component = React.createElement(ContactView, Object.assign({}, state, {
+            onNewContactChange: updateNewContact,
+            onNewContactSubmit: submitNewContact,
+        }));
+        break;
+        default:
+            component = React.createElement('div', {},
+                React.createElement('h1',{}, "Click Below for Contacts:"),
+                React.createElement('a', {href: '#/contacts'}, "Contacts")
+            );
+    }       
+    ReactDOM.render(component, document.getElementById('react-app'));
+}
+
+window.addEventListener('hashchange', navigated, false);
+
+navigated();
+
+
 
